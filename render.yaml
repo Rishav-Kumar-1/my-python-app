@@ -15,7 +15,7 @@ services:
     name: resumerag-frontend
     env: static
     plan: free
-    buildCommand: cd frontend && npm install && CI=false npx react-scripts build
+    buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/build
     envVars:
       - key: REACT_APP_API_URL
