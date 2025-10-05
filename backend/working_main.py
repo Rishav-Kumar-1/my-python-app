@@ -462,7 +462,22 @@ async def match_candidates(
 
 @app.get("/")
 async def root():
-    return {"message": "ResumeRAG API is running!", "docs": "/docs"}
+    return {
+        "message": "ResumeRAG API is running!", 
+        "docs": "/docs",
+        "status": "healthy",
+        "version": "1.0.0"
+    }
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for deployment monitoring"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "service": "ResumeRAG API",
+        "version": "1.0.0"
+    }
 
 if __name__ == "__main__":
     import uvicorn
