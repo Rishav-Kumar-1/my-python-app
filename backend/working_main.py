@@ -245,6 +245,18 @@ async def get_resume(
     
     return resume
 
+@app.get("/api/candidates")
+async def get_all_candidates(
+    current_user: dict = Depends(get_current_user)
+):
+    """Get all candidates (for recruiter view)"""
+    check_rate_limit(current_user["id"])
+    
+    # For demo purposes, return all resumes as candidates
+    # In a real app, you'd filter based on permissions
+    all_candidates = list(resumes_db.values())
+    return all_candidates
+
 @app.get("/api/candidates/{resume_id}")
 async def get_candidate(
     resume_id: str,

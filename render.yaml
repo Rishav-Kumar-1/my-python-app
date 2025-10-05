@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: resumerag-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python backend/working_start.py
+    envVars:
+      - key: SECRET_KEY
+        value: resumerag-secret-key-2024-production
+      - key: DATABASE_URL
+        value: sqlite:///./resumerag.db
+
+  - type: web
+    name: resumerag-frontend
+    env: static
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://resumerag-backend.onrender.com

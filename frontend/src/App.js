@@ -11,6 +11,7 @@ import Upload from './pages/Upload';
 import Search from './pages/Search';
 import Jobs from './pages/Jobs';
 import Candidates from './pages/Candidates';
+import CandidatesList from './pages/CandidatesList';
 import Navbar from './components/Navbar';
 
 const queryClient = new QueryClient();
@@ -130,6 +131,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <Jobs />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/candidates" 
+                    element={
+                      <ProtectedRoute>
+                        <CandidatesList />
                       </ProtectedRoute>
                     } 
                   />
