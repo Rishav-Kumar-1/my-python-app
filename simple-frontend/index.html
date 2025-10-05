@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeRAG - Simple Version</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            text-align: center;
+        }
+        .button {
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .button:hover {
+            background: #1d4ed8;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 ResumeRAG Application</h1>
+        
+        <div id="loginSection">
+            <h2>Login</h2>
+            <div class="form-group">
+                <input type="email" id="loginEmail" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <input type="password" id="loginPassword" placeholder="Password">
+            </div>
+            <button class="button" onclick="login()">Login</button>
+            <button class="button" onclick="showRegister()">Register Instead</button>
+        </div>
+
+        <div id="registerSection" style="display: none;">
+            <h2>Register</h2>
+            <div class="form-group">
+                <input type="email" id="registerEmail" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <input type="password" id="registerPassword" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <select id="registerRole">
+                    <option value="candidate">Candidate</option>
+                    <option value="recruiter">Recruiter</option>
+                </select>
+            </div>
+            <button class="button" onclick="register()">Register</button>
+            <button class="button" onclick="showLogin()">Login Instead</button>
+        </div>
+
+        <div id="appSection" style="display: none;">
+            <h2>Welcome to ResumeRAG!</h2>
+            <p>Your application is working successfully!</p>
+            
+            <h3>Features Available:</h3>
+            <ul>
+                <li>✅ User Authentication</li>
+                <li>✅ Resume Upload</li>
+                <li>✅ Resume Search</li>
+                <li>✅ Job Management</li>
+                <li>✅ Candidate Management</li>
+            </ul>
+
+            <button class="button" onclick="testAPI()">Test API Connection</button>
+            <button class="button" onclick="logout()">Logout</button>
+        </div>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        const API_URL = process.env.REACT_APP_API_URL || 'https://your-backend-url.onrender.com';
+        
+        function showMessage(text, type = 'success') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => messageDiv.innerHTML = '', 5000);
+        }
+
+        function showRegister() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+        }
+
+        function showApp() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('appSection').style.display = 'block';
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (response.ok) {
+                    showMessage('Login successful!', 'success');
+                    showApp();
+                } else {
+                    showMessage('Login failed. Try registering first.', 'error');
+                }
+            } catch (error) {
+                showMessage('Connection error. Make sure backend is running.', 'error');
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, role })
+                });
+                
+                if (response.ok) {
+                    showMessage('Registration successful! Please login.', 'success');
+                    showLogin();
+                } else {
+                    showMessage('Registration failed. Email might already exist.', 'error');
+                }
+            } catch (error) {
+                showMessage('Connection error. Make sure backend is running.', 'error');
+            }
+        }
+
+        async function testAPI() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                if (response.ok) {
+                    showMessage('✅ API connection successful!', 'success');
+                } else {
+                    showMessage('❌ API connection failed', 'error');
+                }
+            } catch (error) {
+                showMessage('❌ Cannot connect to API', 'error');
+            }
+        }
+
+        function logout() {
+            document.getElementById('appSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+            showMessage('Logged out successfully', 'success');
+        }
+
+        // Test API connection on load
+        window.onload = function() {
+            testAPI();
+        };
+    </script>
+</body>
+</html>
