@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeRAG Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            margin: 20px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #2563eb;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .logo p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 15px;
+        }
+        
+        .btn:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        
+        .features {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .features h3 {
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+        
+        .features ul {
+            list-style: none;
+        }
+        
+        .features li {
+            padding: 8px 0;
+            color: #4b5563;
+        }
+        
+        .features li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .api-status {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .status-connected {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-disconnected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🚀 ResumeRAG</h1>
+            <p>AI-Powered Resume Management System</p>
+        </div>
+
+        <div id="apiStatus" class="api-status">
+            <span id="statusText">Checking API connection...</span>
+        </div>
+
+        <!-- Login Section -->
+        <div id="loginSection">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #1f2937;">Welcome Back!</h2>
+            
+            <div class="form-group">
+                <label for="loginEmail">Email Address</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+            </div>
+            
+            <button class="btn" onclick="login()" id="loginBtn">
+                <span id="loginText">Login</span>
+                <span id="loginLoading" class="hidden"><div class="loading"></div> Logging in...</span>
+            </button>
+            
+            <button class="btn btn-secondary" onclick="showRegister()">Create New Account</button>
+        </div>
+
+        <!-- Register Section -->
+        <div id="registerSection" class="hidden">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #1f2937;">Join ResumeRAG</h2>
+            
+            <div class="form-group">
+                <label for="registerEmail">Email Address</label>
+                <input type="email" id="registerEmail" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" placeholder="Create a password">
+            </div>
+            
+            <div class="form-group">
+                <label for="registerRole">Account Type</label>
+                <select id="registerRole">
+                    <option value="candidate">Job Candidate</option>
+                    <option value="recruiter">Recruiter</option>
+                </select>
+            </div>
+            
+            <button class="btn" onclick="register()" id="registerBtn">
+                <span id="registerText">Create Account</span>
+                <span id="registerLoading" class="hidden"><div class="loading"></div> Creating account...</span>
+            </button>
+            
+            <button class="btn btn-secondary" onclick="showLogin()">Already have an account?</button>
+        </div>
+
+        <!-- App Section -->
+        <div id="appSection" class="hidden">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #1f2937;">Dashboard</h2>
+            
+            <div class="features">
+                <h3>Available Features</h3>
+                <ul>
+                    <li>Upload and manage resumes</li>
+                    <li>Search resumes with AI</li>
+                    <li>Create and manage job postings</li>
+                    <li>View candidate profiles</li>
+                    <li>Match candidates to jobs</li>
+                </ul>
+            </div>
+            
+            <button class="btn" onclick="testAPI()">Test API Connection</button>
+            <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000' 
+            : 'https://your-backend-url.onrender.com'; // Replace with your actual backend URL
+        
+        // Utility functions
+        function showMessage(text, type = 'info') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => messageDiv.innerHTML = '', 5000);
+        }
+
+        function setLoading(buttonId, textId, loadingId, isLoading) {
+            const text = document.getElementById(textId);
+            const loading = document.getElementById(loadingId);
+            const button = document.getElementById(buttonId);
+            
+            if (isLoading) {
+                text.classList.add('hidden');
+                loading.classList.remove('hidden');
+                button.disabled = true;
+            } else {
+                text.classList.remove('hidden');
+                loading.classList.add('hidden');
+                button.disabled = false;
+            }
+        }
+
+        function updateAPIStatus(connected) {
+            const statusDiv = document.getElementById('apiStatus');
+            const statusText = document.getElementById('statusText');
+            
+            if (connected) {
+                statusDiv.className = 'api-status status-connected';
+                statusText.textContent = '✅ API Connected';
+            } else {
+                statusDiv.className = 'api-status status-disconnected';
+                statusText.textContent = '❌ API Disconnected';
+            }
+        }
+
+        // Navigation functions
+        function showRegister() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('registerSection').classList.remove('hidden');
+            document.getElementById('message').innerHTML = '';
+        }
+
+        function showLogin() {
+            document.getElementById('registerSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('message').innerHTML = '';
+        }
+
+        function showApp() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('registerSection').classList.add('hidden');
+            document.getElementById('appSection').classList.remove('hidden');
+            document.getElementById('message').innerHTML = '';
+        }
+
+        // API functions
+        async function checkAPI() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const connected = response.ok;
+                updateAPIStatus(connected);
+                return connected;
+            } catch (error) {
+                updateAPIStatus(false);
+                return false;
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+            
+            setLoading('loginBtn', 'loginText', 'loginLoading', true);
+            
+            try {
+                const response = await fetch(`${API_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (response.ok) {
+                    showMessage('Login successful! Welcome to ResumeRAG!', 'success');
+                    setTimeout(() => showApp(), 1000);
+                } else {
+                    showMessage('Login failed. Please check your credentials or register first.', 'error');
+                }
+            } catch (error) {
+                showMessage('Connection error. Please check if the backend is running.', 'error');
+            } finally {
+                setLoading('loginBtn', 'loginText', 'loginLoading', false);
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const role = document.getElementById('registerRole').value;
+            
+            if (!email || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+            
+            setLoading('registerBtn', 'registerText', 'registerLoading', true);
+            
+            try {
+                const response = await fetch(`${API_URL}/api/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, role })
+                });
+                
+                if (response.ok) {
+                    showMessage('Registration successful! Please login with your new account.', 'success');
+                    setTimeout(() => showLogin(), 1500);
+                } else {
+                    showMessage('Registration failed. Email might already be registered.', 'error');
+                }
+            } catch (error) {
+                showMessage('Connection error. Please check if the backend is running.', 'error');
+            } finally {
+                setLoading('registerBtn', 'registerText', 'registerLoading', false);
+            }
+        }
+
+        async function testAPI() {
+            const connected = await checkAPI();
+            if (connected) {
+                showMessage('✅ API connection successful! All systems operational.', 'success');
+            } else {
+                showMessage('❌ API connection failed. Please check backend deployment.', 'error');
+            }
+        }
+
+        function logout() {
+            document.getElementById('appSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            showMessage('Logged out successfully', 'success');
+        }
+
+        // Initialize
+        window.onload = function() {
+            checkAPI();
+            // Check API every 30 seconds
+            setInterval(checkAPI, 30000);
+        };
+    </script>
+</body>
+</html>

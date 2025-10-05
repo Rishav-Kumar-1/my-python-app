@@ -1,0 +1,10 @@
+{
+  "name": "resumerag-frontend",
+  "version": "1.0.0",
+  "description": "ResumeRAG Frontend - Static Build",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'Static site ready'",
+    "build": "echo 'Already built'"
+  }
+}
